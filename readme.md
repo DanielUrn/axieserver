@@ -17,8 +17,8 @@ Routes:
         /energy/:address
 
 Endpoints used:
-    ronin.rest
-    https://axie-graphql.web.app
+    ronin.rest,
+    https://axie-graphql.web.app,
     https://landplots.vercel.app
 
 
