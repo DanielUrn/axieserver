@@ -1,5 +1,5 @@
 # RUN
-
+Default port is set to 8080
 ## Install the dependencies
     npm i
 
