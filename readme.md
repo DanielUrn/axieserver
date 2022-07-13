@@ -26,11 +26,11 @@
 # Models for Objects:
 ## Land
     [
-        Estimated total rewards per day
-        Lands on sale would also appear on Unstaked
+        //Estimated total rewards per day
+        //Lands on sale would also appear on Unstaked
         StakedUnstakedArray: { unstaked: 0, staked: 0 },
         
-        Land objects
+        //Land objects
         ETHWalletLand = { 
             staked: [
                 {
@@ -54,4 +54,4 @@
                     daily
                 }... (continues with the other pools, same attributes)
     }
-    SLP pool seems to be kinda faulty
+    //SLP pool seems to be kinda faulty
