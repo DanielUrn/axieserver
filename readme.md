@@ -1,29 +1,29 @@
-RUN
+#RUN
 
-Install the dependencies
+##Install the dependencies
     npm i
 
-If Nodemon is installed globally
+##If Nodemon is installed globally
     npm run dev
 
-Otherwise just do
+##Otherwise just do
     node app
 
-Routes:
-    Retrieve Object
+#Routes:
+    ##Retrieve Object
         /land/:address
         /liquidity/:address
-    Retrieve Number
+    ##Retrieve Number
         /energy/:address
 
-Endpoints used:
+#Endpoints used:
     ronin.rest,
     https://axie-graphql.web.app,
     https://landplots.vercel.app
 
 
-Models for Objects:
-    Land
+#Models for Objects:
+    ##Land
     [
         Estimated total rewards per day
         Lands on sale would also appear on Unstaked
@@ -43,7 +43,7 @@ Models for Objects:
             unstaked: [(same kind of object as the staked one)] }
     ]
 
-    Liquidity
+    ##Liquidity
     {
         address,
             pools: {
