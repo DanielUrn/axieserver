@@ -8,7 +8,7 @@ const router = Router()
 //I separated each land between staked and unstaked
 //Lands on sale will appear on unstaked as well
 //IDs for lands are rows and cols
-var ETHWalletLand = { staked: [], unstaked: [] } 
+var ETHWalletLand = { staked: [], unstaked: [] }
 
 //For some reason this was an object inside of an array ???
 //I took the array off
@@ -17,13 +17,15 @@ var StakedUnstakedArray = { unstaked: 0, staked: 0 }; //COUNTING AXS REWARD PER 
 const vercel = "https://landplots.vercel.app/land/"
 const axiegraphql = "https://graphql-gateway.axieinfinity.com/graphql"
 const roninrest = "https://ronin.rest"
+const maxbrand = "https://game-api.axie.technology"
+const runes = "https://game-api-origin.skymavis.com/v2/runes"
 
 router.get('/land/:address', (req, res) => {
     //The code below seems sort of inefficient
     //It was written by an Axie MOD called HenriCoder
     //See https://coderhenri.github.io/MinAccWorthV3/, its made with just Vanilla JS, HTML and CSS
     axios.get(vercel + req.params.address)
-        
+
         .then(function (response) {
             return response.data;
         })
@@ -38,7 +40,7 @@ router.get('/land/:address', (req, res) => {
 
             //LOL, I know mapping would be better
             //this is calculating rewards per type of land
-            //and in separated properties
+            //in separated properties
             for (let n = 0; n < data.owned.length; n++) {
                 if (data.owned[n].landType == "Genesis") {
                     StakedUnstakedArray.unstaked += 32.7;
@@ -87,15 +89,41 @@ router.get('/energy/:address', (req, res) => {
     }).then((response) => {
         const totalaxies = response.data.data.axies.total
         //simple logic with ternary operators
-        const energies = (totalaxies >= 3) && (totalaxies <= 9) ? 20 : (totalaxies >= 10) && (totalaxies <= 19) ? 40 : totalaxies >= 20 ? 60 : 0
-        res.status(200).json(energies)
+        const maxenergies = (totalaxies >= 3) && (totalaxies <= 9) ? 20 : (totalaxies >= 10) && (totalaxies <= 19) ? 40 : totalaxies >= 20 ? 60 : 0
+
+        const date = new Date()
+        const day = date.getDate()
+        const year = date.getFullYear()
+        const month = date.getMonth()
+        const today = Date.parse(new Date(Date.UTC(year, month, day))) //reset time UTC+0
+
+        let battlestoday = 0
+
+        axios.get(maxbrand + "/logs/pvp/" + req.params.address).then((response) => {
+
+            for (let battle of response.data.battles) {
+                if(Date.parse(battle.game_ended) > today) {battlestoday+=1}
+            }
+            res.status(200).json(battlestoday > maxenergies ? 0 : maxenergies-battlestoday)
+        })
+
     })
+
+    router.get('/tracker/:address', (req,res)=>{
+        axios.get(`https://tracker.axie.management/${req.params.address}/battles`)
+        .then((response) => {
+            console.log(response)
+        })
+    })
+
+
 })
 
-router.get('/liquidity/:address', (req,res)=>{
+
+router.get('/liquidity/:address', (req, res) => {
     //Sometimes this endpoint would fail to bring accurate data
     //specially on the SLP-WETH pair
-    axios.get(roninrest+'/katana/pools/'+req.params.address).then(response =>{
+    axios.get(roninrest + '/katana/pools/' + req.params.address).then(response => {
         //this object has A LOT of information
         //such as the total stake of the pool
         //which can be dismissed along with other info
@@ -130,5 +158,10 @@ router.get('/liquidity/:address', (req,res)=>{
     })
 })
 
+router.get('/runes',(req,res) => {
+    axios.get(runes).then(response => {
+        res.status(200).json(response.data._items)
+    })
+})
 
 export default router
