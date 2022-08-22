@@ -225,6 +225,8 @@ router.get('/RunesAndCharmsPerAccount/:address', (req, res) => {
         }
         console.log(accountTokens.runes)
         return res.status(200).json(accountTokens)
+    }).catch((error) => {
+        return res.status(404).json('Something is wrong')
     })
 })
 
