@@ -19,6 +19,17 @@ const axiegraphql = "https://graphql-gateway.axieinfinity.com/graphql"
 const roninrest = "https://ronin.rest"
 const maxbrand = "https://game-api.axie.technology"
 const runes = "https://game-api-origin.skymavis.com/v2/runes"
+const charms = "https://game-api-origin.skymavis.com/v2/charms"
+
+let runesList = []
+axios.get(runes).then((response) => {
+    runesList = response.data._items
+})
+
+let charmsList = []
+axios.get(charms).then((response) => {
+    charmsList = response.data._items
+})
 
 router.get('/land/:address', (req, res) => {
     //The code below seems sort of inefficient
@@ -102,18 +113,18 @@ router.get('/energy/:address', (req, res) => {
         axios.get(maxbrand + "/logs/pvp/" + req.params.address).then((response) => {
 
             for (let battle of response.data.battles) {
-                if(Date.parse(battle.game_ended) > today) {battlestoday+=1}
+                if (Date.parse(battle.game_ended) > today) { battlestoday += 1 }
             }
-            res.status(200).json(battlestoday > maxenergies ? 0 : maxenergies-battlestoday)
+            res.status(200).json(battlestoday > maxenergies ? 0 : maxenergies - battlestoday)
         })
 
     })
 
-    router.get('/tracker/:address', (req,res)=>{
+    router.get('/tracker/:address', (req, res) => {
         axios.get(`https://tracker.axie.management/${req.params.address}/battles`)
-        .then((response) => {
-            console.log(response)
-        })
+            .then((response) => {
+                console.log(response)
+            })
     })
 
 
@@ -158,9 +169,58 @@ router.get('/liquidity/:address', (req, res) => {
     })
 })
 
-router.get('/runes',(req,res) => {
-    axios.get(runes).then(response => {
-        res.status(200).json(response.data._items)
+router.get('/runes', (req, res) => {
+    res.status(200).json(runesList)
+})
+
+router.get('/runes/:id', (req, res) => {
+    const id = req.params.id
+    const rune = runesList.filter((rune) => { return rune.item.tokenId == id })
+    return res.status(200).json(rune[0])
+
+})
+
+router.get('/charms', (req, res) => {
+    res.status(200).json(charmsList)
+})
+
+router.get('/charms/:id', (req, res) => {
+    const id = req.params.id
+    const charm = charmsList.filter((charm) => { return charm.item.tokenId == id })
+    return res.status(200).json(charm[0])
+})
+
+router.get('/RunesAndCharmsPerAccount/:address', (req, res) => {
+    axios.post(axiegraphql, {
+        "operationName": "GetErc1155TokensByOwner",
+        "variables": {
+            "from": 0,
+            "owner": `${req.params.address.replace('ronin:', '0x')}`,
+            size: 200
+        },
+        "query": "query GetErc1155TokensByOwner($owner: String!, $from: Int!, $size: Int!) {\n  erc1155Tokens(owner: $owner, from: $from, size: $size) {\n    total\n    results {\n      ...Erc1155Token\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment Erc1155Token on Erc1155Token {\n  total\n  id: tokenId\n  tokenId\n  tokenAddress\n  tokenType\n  __typename\n}\n"
+    }).then((response) => {
+        const tokens = response.data.data.erc1155Tokens.results
+        const accountTokens = { runes: [], charms: [] }
+        let addRune, addCharm = {}
+        if (tokens){
+            for (let token of tokens) {
+                    if (token.tokenType == 'Charm'){
+                        addCharm = charmsList.filter((charm) => { return charm.item.tokenId == token.id })[0]
+                        addCharm["total"] = token.total 
+                        accountTokens.charms.push(addCharm)
+                        addCharm = {}
+                    }else{
+                        addRune = runesList.filter((rune) => { return rune.item.tokenId == token.id })[0]
+                        addRune["total"] = token.total
+                        accountTokens.runes.push(addRune)
+                        addRune = {}
+                    }
+                    
+            }
+        }
+        console.log(accountTokens.runes)
+        return res.status(200).json(accountTokens)
     })
 })
 
