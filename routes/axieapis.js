@@ -31,6 +31,10 @@ axios.get(charms).then((response) => {
     charmsList = response.data._items
 })
 
+router.get('/', (req,res)=>{
+    res.status(200).json('Server Root, please use an Endpoint or check the Readme.md')
+})
+
 router.get('/land/:address', (req, res) => {
     //The code below seems sort of inefficient
     //It was written by an Axie MOD called HenriCoder
