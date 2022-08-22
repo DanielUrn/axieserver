@@ -83,9 +83,9 @@ Default port is set to 8080
                 id,
                 name
             },
-            _etag:a05f1315365e1387ba797fb725f524be,
+        _etag:a05f1315365e1387ba797fb725f524be,
             
-        //This last attribute would only be available in the "RunesAndCharmsPerAccount" endpoint
+        //This last "total" attribute would only be available in the "RunesAndCharmsPerAccount" endpoint
         total:2
     }
 
@@ -113,8 +113,8 @@ Default port is set to 8080
                 id,
                 name
             },
-            _etag:a05f1315365e1387ba797fb725f524be,
+        _etag:a05f1315365e1387ba797fb725f524be,
         
-        //This last attribute would only be available in the "RunesAndCharmsPerAccount" endpoint    
+        //This last "total" attribute would only be available in the "RunesAndCharmsPerAccount" endpoint    
         total:3
     }
