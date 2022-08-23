@@ -118,3 +118,10 @@ Default port is set to 8080
         //This last "total" attribute would only be available in the "RunesAndCharmsPerAccount" endpoint    
         total:3
     }
+
+## Runes and Charms per Account
+    each JSON in the array will be as specified ↑
+    {
+        runes: [],
+        charms: []
+    }
